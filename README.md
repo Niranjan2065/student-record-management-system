@@ -31,5 +31,9 @@ A responsive and interactive **web-based application** for managing student reco
 | JavaScript | Firebase Hosting (optional) |
 
 ---
+![HTML](https://img.shields.io/badge/Code-HTML-orange?style=flat-square&logo=html5)
+![CSS](https://img.shields.io/badge/Style-CSS-blue?style=flat-square&logo=css3)
+![JavaScript](https://img.shields.io/badge/Logic-JavaScript-yellow?style=flat-square&logo=javascript)
+![Firebase](https://img.shields.io/badge/Backend-Firebase-orange?style=flat-square&logo=firebase)
 
 
