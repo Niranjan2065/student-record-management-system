@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Set Fees Structure</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+        }
+        input, select {
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin - Set Fees Structure</h1>
+        <form id="feesForm">
+            <label for="course">Course:</label>
+            <input type="text" id="course" required>
+            
+            <label for="year">Year:</label>
+            <select id="year" required>
+                <option value="1">1st Year</option>
+                <option value="2">2nd Year</option>
+                <option value="3">3rd Year</option>
+                <option value="4">4th Year</option>
+            </select>
+            
+            <label for="fees">Fees Amount:</label>
+            <input type="number" id="fees" required>
+            
+            <label for="dueDate">Due Date:</label>
+            <input type="date" id="dueDate" required>
+            
+            <button type="submit">Set Fees</button>
+        </form>
+
+        <h2>Current Fees Structure</h2>
+        <table id="feesTable">
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Year</th>
+                    <th>Fees Amount</th>
+                    <th>Due Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Fees data will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1hnJlT9nixcWFTfNSRZVNe-hov1laRS8",
+            authDomain: "student-record-system-92.firebaseapp.com",
+            databaseURL: "https://student-record-system-92-default-rtdb.firebaseio.com",
+            projectId: "student-record-system-92",
+            storageBucket: "student-record-system-92.appspot.com",
+            messagingSenderId: "595631053147",
+            appId: "1:595631053147:web:2a50a7483e983f5c91e27e"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Get form and table elements
+        const form = document.getElementById('feesForm');
+        const feesTable = document.getElementById('feesTable').getElementsByTagName('tbody')[0];
+
+        // Form submission
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const course = document.getElementById('course').value;
+            const year = document.getElementById('year').value;
+            const fees = document.getElementById('fees').value;
+            const dueDate = document.getElementById('dueDate').value;
+
+            // Save fees data to Firebase
+            set(ref(database, `fees/${course}/${year}`), {
+                amount: Number(fees),
+                dueDate: dueDate
+            }).then(() => {
+                alert('Fees structure updated successfully!');
+                form.reset();
+            }).catch((error) => {
+                console.error("Error updating fees structure:", error);
+                alert("An error occurred while updating the fees structure. Please try again.");
+            });
+        });
+
+        // Listen for changes in the fees structure
+        const feesRef = ref(database, 'fees');
+        onValue(feesRef, (snapshot) => {
+            const data = snapshot.val();
+            updateFeesTable(data);
+        });
+
+        // Update the fees table
+        function updateFeesTable(data) {
+            feesTable.innerHTML = '';
+            for (let course in data) {
+                for (let year in data[course]) {
+                    let row = feesTable.insertRow();
+                    let cellCourse = row.insertCell(0);
+                    let cellYear = row.insertCell(1);
+                    let cellFees = row.insertCell(2);
+                    let cellDueDate = row.insertCell(3);
+                    cellCourse.textContent = course;
+                    cellYear.textContent = year;
+                    cellFees.textContent = `$${data[course][year].amount}`;
+                    cellDueDate.textContent = data[course][year].dueDate;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

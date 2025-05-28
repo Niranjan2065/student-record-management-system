@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Fees Payment</title>
+    <link rel="shortcut icon" href="/images/fees.png" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+        }
+        input, select {
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #receiptModal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Fees Payment</h1>
+        <form id="paymentForm">
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+            
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" required>
+            
+            <label for="course">Course:</label>
+            <select id="course" required>
+                <option value="">Select a course</option>
+                <!-- Course options will be populated dynamically -->
+            </select>
+            
+            <label for="year">Year:</label>
+            <select id="year" required>
+                <option value="1">1st Year</option>
+                <option value="2">2nd Year</option>
+                <option value="3">3rd Year</option>
+                <option value="4">4th Year</option>
+            </select>
+            
+            <label for="amount">Fees Amount:</label>
+            <input type="number" id="amount" readonly>
+            
+            <label for="dueDate">Due Date:</label>
+            <input type="text" id="dueDate" readonly>
+            
+            <button type="submit">Pay Now</button>
+        </form>
+    </div>
+
+    <div id="receiptModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Payment Receipt</h2>
+            <p>Your payment has been processed successfully. A PDF receipt will be generated shortly.</p>
+            <button id="downloadReceipt">Download Receipt</button>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getDatabase, ref, push, get, onValue } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1hnJlT9nixcWFTfNSRZVNe-hov1laRS8",
+            authDomain: "student-record-system-92.firebaseapp.com",
+            databaseURL: "https://student-record-system-92-default-rtdb.firebaseio.com",
+            projectId: "student-record-system-92",
+            storageBucket: "student-record-system-92.appspot.com",
+            messagingSenderId: "595631053147",
+            appId: "1:595631053147:web:2a50a7483e983f5c91e27e"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Get form and modal elements
+        const form = document.getElementById('paymentForm');
+        const courseSelect = document.getElementById('course');
+        const yearSelect = document.getElementById('year');
+        const amountInput = document.getElementById('amount');
+        const dueDateInput = document.getElementById('dueDate');
+        const modal = document.getElementById('receiptModal');
+        const closeBtn = document.getElementsByClassName('close')[0];
+        const downloadBtn = document.getElementById('downloadReceipt');
+
+        // Populate course options and set up fees listener
+        const feesRef = ref(database, 'fees');
+        onValue(feesRef, (snapshot) => {
+            const data = snapshot.val();
+            updateCourseOptions(data);
+        });
+
+        function updateCourseOptions(data) {
+            courseSelect.innerHTML = '<option value="">Select a course</option>';
+            for (let course in data) {
+                let option = document.createElement('option');
+                option.value = course;
+                option.textContent = course;
+                courseSelect.appendChild(option);
+            }
+        }
+
+        // Update fees amount and due date when course and year are selected
+        function updateFeesInfo() {
+            const selectedCourse = courseSelect.value;
+            const selectedYear = yearSelect.value;
+            if (selectedCourse && selectedYear) {
+                get(ref(database, `fees/${selectedCourse}/${selectedYear}`)).then((snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        amountInput.value = data.amount;
+                        dueDateInput.value = data.dueDate;
+                    } else {
+                        amountInput.value = '';
+                        dueDateInput.value = '';
+                    }
+                });
+            } else {
+                amountInput.value = '';
+                dueDateInput.value = '';
+            }
+        }
+
+        courseSelect.addEventListener('change', updateFeesInfo);
+        yearSelect.addEventListener('change', updateFeesInfo);
+
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const paymentData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                course: document.getElementById('course').value,
+                year: document.getElementById('year').value,
+                amount: document.getElementById('amount').value,
+                dueDate: document.getElementById('dueDate').value,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                // Save payment data to Firebase
+                const paymentRef = ref(database, 'payments');
+                const newPaymentRef = await push(paymentRef, paymentData);
+                
+                // Show modal
+                modal.style.display = "block";
+            } catch (error) {
+                console.error("Error saving payment data:", error);
+                alert("An error occurred while processing your payment. Please try again.");
+            }
+        });
+
+        // Close modal when clicking on 'x'
+        closeBtn.onclick = () => {
+            modal.style.display = "none";
+        };
+
+        // Close modal when clicking outside of it
+        window.onclick = (event) => {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+
+        // Generate and download PDF receipt
+        downloadBtn.onclick = async () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            try {
+                const paymentRef = ref(database, 'payments');
+                const snapshot = await get(paymentRef);
+                const payments = snapshot.val();
+                const latestPayment = Object.values(payments).pop();
+
+                doc.setFontSize(18);
+                doc.text('Payment Receipt', 105, 20, null, null, 'center');
+                
+                doc.setFontSize(12);
+                doc.text(`Name: ${latestPayment.name}`, 20, 40);
+                doc.text(`Email: ${latestPayment.email}`, 20, 50);
+                doc.text(`Phone: ${latestPayment.phone}`, 20, 60);
+                doc.text(`Course: ${latestPayment.course}`, 20, 70);
+                doc.text(`Year: ${latestPayment.year}`, 20, 80);
+                doc.text(`Amount Paid: $${latestPayment.amount}`, 20, 90);
+                doc.text(`Due Date: ${latestPayment.dueDate}`, 20, 100);
+                doc.text(`Payment Date: ${new Date(latestPayment.timestamp).toLocaleString()}`, 20, 110);
+
+                doc.save('payment_receipt.pdf');
+            } catch (error) {
+                console.error("Error generating receipt:", error);
+                alert("An error occurred while generating the receipt. Please try again.");
+            }
+        };
+    </script>
+</body>
+</html>

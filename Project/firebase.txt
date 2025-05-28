@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile</title>
+    <link rel="stylesheet" href="studentform.css"> 
+</head>
+<body>
+    <div class="profile-container">
+        <h2>Student Profile</h2>
+        <form id="studentProfileForm">
+            <div class="form-group">
+                <label for="fullName">Full Name:</label>
+                <input type="text" id="fullName" name="fullName" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number:</label>
+                <input type="tel" id="phone" name="phone">
+            </div>
+            <div class="form-group">
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob" name="dob" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <textarea id="address" name="address" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="course">Course:</label>
+                <input type="text" id="course" name="course" required>
+            </div>
+            <div class="form-group">
+                <label for="year">Year:</label>
+                <input type="number" id="year" name="year" min="1" max="5" required>
+            </div>
+            <button type="button" id="addBtn">Add Profile</button><br>
+            <button type="submit" id="updateBtn">Update Profile</button><br>
+            <button type="button" id="removeBtn">Remove Profile</button><br>
+            <button type="button" id="deleteBtn">Delete Profile</button>
+        </form>
+    </div>
+    <script type="module">
+       
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+       
+        const firebaseConfig = {
+          apiKey: "AIzaSyC1hnJlT9nixcWFTfNSRZVNe-hov1laRS8",
+          authDomain: "student-record-system-92.firebaseapp.com",
+          databaseURL: "https://student-record-system-92-default-rtdb.firebaseio.com",
+          projectId: "student-record-system-92",
+          storageBucket: "student-record-system-92.appspot.com",
+          messagingSenderId: "595631053147",
+          appId: "1:595631053147:web:2a50a7483e983f5c91e27e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+
+        import{getDatabase,ref,child,get,set,update,remove}from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.app";
+        const db=getDatabase();
+        let Fname=document.getElementById('fullName');
+        let Email=document.getElementById('email');
+        let phone=document.getElementById('phone');
+        let dateofbirth =document.getElementById('dob');
+        let address=document.getElementById('address');
+        let course=document.getElementById('course');
+
+
+        let addbtn=document.getElementById('addBtn');
+        let updatebtn=document.getElementById('updateBtn');
+        let removebtn=document.getElementById('removeBtn');
+        let deletebtn=document.getElementById('deleteBtn');
+
+        function AddData()
+        {
+            set(ref(db,'studentSet/'+ Email.value),{
+                nameofstudent:{fullname:fullname.value},
+                email:email.value,
+                phone:phone.value
+            }).then(()=>{
+                alert("Student Data Added Successfully...");
+            }).catch(()=>{
+                alert("Unsuccessfuly"); 
+                console.log(error);
+            })
+        }
+        function RetData(){
+            const dbRef=ref(db)
+            get(child(daRef,'studentSet/'+Email.value)).then((snapshot)=>{
+                if(snapshot.exists()){
+                    fullname.value=snapshot.val().nameofstudent.fullname;
+
+                    email.value=snapshot.val().nameofstudent.email;
+
+                    phone.value=snapshot.val().nameofstudent.phone;
+
+                    dateofbirth.value=snapshot.val().nameofstudent.dob;
+
+                    address.value=snapshot.val().nameofstudent.address;
+
+                    course.value=snapshot.val().nameofstudent.course;
+                }
+                else{
+                    alert("Student does not exist");
+                }
+            }).catch(()=>{
+                alert("Unsuccessfuly"); 
+                console.log(error);
+            })
+        }
+
+        function udateData()
+        {
+            update(ref(db,'studentSet/'+ Email.value),{
+                nameofstudent:{fullname:fullname.value},
+                email:email.value,
+                phone:phone.value
+            }).then(()=>{
+                alert("Student Data Updated Successfully...");
+            }).catch(()=>{
+                alert("Unsuccessfuly"); 
+                console.log(error);
+            })
+        }
+
+        function DeleteData()
+        {
+            remove(ref(db,'studentSet/'+ Email.value))
+            .then(()=>{
+                alert("Student Data Deleted Successfully...");
+            }).catch(()=>{
+                alert("Unsuccessfuly"); 
+                console.log(error);
+            })
+        }
+
+        addbtn.addEventListener('click',AddData);
+        updatebtn.addEventListener('click',RetData);
+        removebtn.addEventListener('click',udateData);
+        deletebtn.addEventListener('click',DeleteData);
+      </script>
+</body>
+</html>

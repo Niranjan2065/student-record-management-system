@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Details Viewer</title>
+    <link rel="stylesheet" href="student_details.css">
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Details Viewer</h1>
+        <div class="search-container">
+            <input placeholder="Enter Registration Number" class="input-style" type="text" id="regNo">
+            <button onclick="getStudentDetails()">Get Details</button>
+        </div>
+        <div id="studentDetails" class="student-details">
+            
+        </div>
+        
+    </div>
+    <script src="student_details.js"></script>
+</body>
+</html>

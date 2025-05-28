@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Sidebar</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+        }
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease-in-out;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+        .sidebar.hidden {
+            transform: translateX(-230px);
+        }
+        .sidebar h2 {
+            color: #3498db;
+            margin-bottom: 30px;
+            font-size: 24px;
+            text-align: center;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar li {
+            margin-bottom: 15px;
+        }
+        .sidebar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            display: block;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .sidebar a:hover {
+            background-color: #34495e;
+            transform: translateX(5px);
+        }
+        .sidebar-toggle {
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 0 5px 5px 0;
+            transform: translateY(-50%);
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                transform: translateX(-100%);
+            }
+            .sidebar.hidden {
+                transform: translateX(-100%);
+            }
+            .sidebar-toggle {
+                right: -40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar" class="sidebar hidden">
+        <h2>Student Portal</h2>
+        <ul>
+            <li><a href="#"><i class="icon">📊</i> Dashboard</a></li>
+            <li><a href="#"><i class="icon">📚</i> Courses</a></li>
+            <li><a href="#"><i class="icon">📝</i> Assignments</a></li>
+            <li><a href="#"><i class="icon">🏆</i> Grades</a></li>
+            <li><a href="#"><i class="icon">📅</i> Schedule</a></li>
+            <li><a href="#"><i class="icon">💬</i> Messages</a></li>
+            <li><a href="#"><i class="icon">⚙️</i> Settings</a></li>
+        </ul>
+        <button class="sidebar-toggle">❯</button>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const toggle = document.querySelector('.sidebar-toggle');
+        let timeout;
+
+        function showSidebar() {
+            clearTimeout(timeout);
+            sidebar.classList.remove('hidden');
+        }
+
+        function hideSidebar() {
+            timeout = setTimeout(() => {
+                sidebar.classList.add('hidden');
+            }, 300);
+        }
+
+        sidebar.addEventListener('mouseenter', showSidebar);
+        sidebar.addEventListener('mouseleave', hideSidebar);
+
+        toggle.addEventListener('click', () => {
+            sidebar.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

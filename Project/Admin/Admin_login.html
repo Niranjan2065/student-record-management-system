@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Authentication</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .auth-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        h1 {
+            text-align: center;
+            color: #1877f2;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #dddfe2;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #1877f2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #166fe5;
+        }
+        .message {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+        .toggle-form {
+            text-align: center;
+            margin-top: 15px;
+            color: #1877f2;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h1 id="formTitle">Admin Login</h1>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button id="authButton" onclick="authenticate()">Login</button>
+        <p id="message" class="message"></p>
+        <p class="toggle-form" onclick="toggleForm()">
+            <span id="toggleText">Create an admin account</span>
+        </p>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1hnJlT9nixcWFTfNSRZVNe-hov1laRS8",
+            authDomain: "student-record-system-92.firebaseapp.com",
+            databaseURL: "https://student-record-system-92-default-rtdb.firebaseio.com",
+            projectId: "student-record-system-92",
+            storageBucket: "student-record-system-92.appspot.com",
+            messagingSenderId: "595631053147",
+            appId: "1:595631053147:web:2a50a7483e983f5c91e27e"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        let isLoginForm = true;
+
+        function toggleForm() {
+            isLoginForm = !isLoginForm;
+            const formTitle = document.getElementById('formTitle');
+            const authButton = document.getElementById('authButton');
+            const toggleText = document.getElementById('toggleText');
+
+            if (isLoginForm) {
+                formTitle.textContent = 'Admin Login';
+                authButton.textContent = 'Login';
+                toggleText.textContent = 'Create an admin account';
+            } else {
+                formTitle.textContent = 'Create Admin Account';
+                authButton.textContent = 'Sign Up';
+                toggleText.textContent = 'Back to login';
+            }
+
+            document.getElementById('message').textContent = '';
+        }
+
+        function authenticate() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageElement = document.getElementById('message');
+
+            if (isLoginForm) {
+                login(email, password);
+            } else {
+                signUp(email, password);
+            }
+        }
+
+        function login(email, password) {
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    checkAdminStatus(user);
+                })
+                .catch((error) => {
+                    handleAuthError(error);
+                });
+        }
+
+        function signUp(email, password) {
+            firebase.auth().createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    createAdminAccount(user);
+                })
+                .catch((error) => {
+                    handleAuthError(error);
+                });
+        }
+
+        function createAdminAccount(user) {
+            firebase.database().ref('admins/' + user.uid).set({
+                email: user.email,
+                createdAt: new Date().toISOString()
+            }).then(() => {
+                const messageElement = document.getElementById('message');
+                messageElement.textContent = "Admin account created successfully. You can now log in.";
+                messageElement.className = 'message success';
+                toggleForm(); // Switch back to login form
+            }).catch((error) => {
+                console.error("Error creating admin account:", error);
+                const messageElement = document.getElementById('message');
+                messageElement.textContent = "Error creating admin account. Please try again.";
+                messageElement.className = 'message error';
+            });
+        }
+
+        function checkAdminStatus(user) {
+            const messageElement = document.getElementById('message');
+            firebase.database().ref('admins/' + user.uid).once('value')
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        firebase.database().ref('admins/' + user.uid).update({
+                            lastLogin: new Date().toISOString()
+                        });
+                        messageElement.textContent = "Login successful! Redirecting to admin dashboard...";
+                        messageElement.className = 'message success';
+                        
+                        // Redirect to Admin Dashboard page after successful login
+                        setTimeout(() => {
+                            window.location.href = 'Admin_Dashboard.html'; 
+                        }, 2000); 
+                    } else {
+                        messageElement.textContent = "You are not authorized as an admin.";
+                        messageElement.className = 'message error';
+                        firebase.auth().signOut();
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error checking admin status:", error);
+                    messageElement.textContent = "An error occurred. Please try again later.";
+                    messageElement.className = 'message error';
+                });
+        }
+
+        function handleAuthError(error) {
+            const messageElement = document.getElementById('message');
+            console.error(error.code, error.message);
+            switch (error.code) {
+                case 'auth/invalid-email':
+                    messageElement.textContent = "Invalid email format.";
+                    break;
+                case 'auth/wrong-password':
+                case 'auth/user-not-found':
+                    messageElement.textContent = "Invalid email or password.";
+                    break;
+                case 'auth/email-already-in-use':
+                    messageElement.textContent = "Email is already in use.";
+                    break;
+                case 'auth/weak-password':
+                    messageElement.textContent = "Password is too weak. Use at least 6 characters.";
+                    break;
+                default:
+                    messageElement.textContent = "An error occurred. Please try again.";
+            }
+            messageElement.className = 'message error';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Academic Portal</title>
+        <link rel="shortcut icon" href="images/score.png" type="image/x-icon">
+  <link rel="stylesheet" href="Mark View.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-container" id="loginContainer">
+            <div class="portal-header">
+                <h1>Academic Portal</h1>
+                <p>Please log in to continue</p>
+            </div>
+            <div class="form-group">
+                <label for="userType">I am a:</label>
+                <select id="userType" class="form-control">
+                    <option value="teacher">Teacher</option>
+                    <option value="student">Student</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="userId">ID:</label>
+                <input type="text" id="userId" placeholder="Enter your ID">
+            </div>
+            <button class="btn" onclick="login()">Login</button>
+        </div>
+
+        <div class="dashboard" id="teacherDashboard">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+            <div class="portal-header">
+                <h1>Teacher Dashboard</h1>
+                <p>Manage student marks</p>
+            </div>
+            <div class="alert" id="alertMessage"></div>
+            <div class="student-list" id="studentList">
+            </div>
+        </div>
+
+        <div class="student-dashboard" id="studentDashboard">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+            <div class="portal-header">
+                <h1>Student Dashboard</h1>
+                <p>View your marks</p>
+            </div>
+            <div class="marks-display">
+                <h2>Your Marks</h2>
+                <div id="studentMarksDisplay">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1hnJlT9nixcWFTfNSRZVNe-hov1laRS8",
+            authDomain: "student-record-system-92.firebaseapp.com",
+            databaseURL: "https://student-record-system-92-default-rtdb.firebaseio.com",
+            projectId: "student-record-system-92",
+            storageBucket: "student-record-system-92.appspot.com",
+            messagingSenderId: "595631053147",
+            appId: "1:595631053147:web:2a50a7483e983f5c91e27e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.login = function() {
+            const userType = document.getElementById('userType').value;
+            const userId = document.getElementById('userId').value;
+
+            if (!userId) {
+                showAlert('Please enter an ID', 'error');
+                return;
+            }
+
+            if (userType === 'teacher') {
+                if (userId === 'teacher123') {
+                    showTeacherDashboard();
+                } else {
+                    showAlert('Invalid teacher ID', 'error');
+                }
+            } else {
+                checkStudent(userId);
+            }
+        };
+
+        window.logout = function() {
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('teacherDashboard').style.display = 'none';
+            document.getElementById('studentDashboard').style.display = 'none';
+            document.getElementById('userId').value = '';
+        };
+
+        window.submitMarks = function(studentId) {
+            const marksInput = document.getElementById(`marks-${studentId}`);
+            const marks = marksInput.value;
+
+            if (!marks || marks < 0 || marks > 100) {
+                showAlert('Please enter valid marks (0-100)', 'error');
+                return;
+            }
+
+            set(ref(db, `studentSet/${studentId}/marks`), Number(marks))
+                .then(() => {
+                    showAlert('Marks updated successfully', 'success');
+                    marksInput.value = '';
+                })
+                .catch((error) => {
+                    showAlert('Error updating marks: ' + error.message, 'error');
+                });
+        };
+
+        function checkStudent(studentId) {
+            const studentRef = ref(db, `studentSet/${studentId}`);
+            get(studentRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    showStudentDashboard(studentId);
+                } else {
+                    showAlert('Student ID not found', 'error');
+                }
+            }).catch((error) => {
+                showAlert('Error: ' + error.message, 'error');
+            });
+        }
+
+        function showTeacherDashboard() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('teacherDashboard').style.display = 'block';
+            loadStudents();
+        }
+
+        function showStudentDashboard(studentId) {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('studentDashboard').style.display = 'block';
+            loadStudentMarks(studentId);
+        }
+
+        function loadStudents() {
+            const studentsRef = ref(db, 'studentSet');
+            onValue(studentsRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const students = snapshot.val();
+                    displayStudentList(students);
+                } else {
+                    document.getElementById('studentList').innerHTML = 
+                        '<p class="no-marks">No students found</p>';
+                }
+            });
+        }
+
+        function displayStudentList(students) {
+            const studentList = document.getElementById('studentList');
+            studentList.innerHTML = '';
+
+            Object.entries(students).forEach(([id, student]) => {
+                const studentCard = document.createElement('div');
+                studentCard.className = 'student-card';
+                
+                const marksDisplay = student.marks 
+                    ? `<span class="marks-badge">Current Marks: ${student.marks}</span>`
+                    : '';
+
+                studentCard.innerHTML = `
+                    <div class="student-info">
+                        <h3>${student.name}</h3>
+                        <p>ID: ${id}</p>
+                        ${marksDisplay}
+                    </div>
+                    <div class="marks-input">
+                        <input type="number" id="marks-${id}" 
+                            placeholder="Enter marks" min="0" max="100">
+                        <button class="btn" onclick="submitMarks('${id}')">
+                            ${student.marks ? 'Update' : 'Submit'} Marks
+                        </button>
+                    </div>
+                `;
+                studentList.appendChild(studentCard);
+            });
+        }
+
+        function loadStudentMarks(studentId) {
+            const studentRef = ref(db, `studentSet/${studentId}`);
+            onValue(studentRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const student = snapshot.val();
+                    const marksDisplay = document.getElementById('studentMarksDisplay');
+                    if (student.marks !== undefined) {
+                        marksDisplay.innerHTML = `
+                            <div class="marks">${student.marks}</div>
+                            <p>Your current academic performance</p>
+                        `;
+                    } else {
+                        marksDisplay.innerHTML = `
+                            <p class="no-marks">No marks have been entered yet</p>
+                        `;
+                    }
+                }
+            });
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alertMessage');
+            alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="images/login.png">
+  <title>Login Page</title>
+  <link rel="stylesheet" href="css/styles.css">
+
+  <script src="https://www.google.com/recaptcha/api.js?render=6Lch0hoqAAAAAMxQn7hOpQPAMx5JwL6NwXs_SQaf">
+    
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC1hnJlT9nixcWFTfNSRZVNe-hov1laRS8",
+      authDomain: "student-record-system-92.firebaseapp.com",
+      projectId: "student-record-system-92",
+      storageBucket: "student-record-system-92.appspot.com",
+      messagingSenderId: "595631053147",
+      appId: "1:595631053147:web:2a50a7483e983f5c91e27e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+ 
+
+    document.getElementById('resetPasswordLink').addEventListener('click', function () {
+      const email = prompt('Please enter your email for password reset:');
+      if (email) {
+        sendPasswordResetEmail(auth, email)
+          .then(() => {
+            alert('Password reset email sent!');
+          })
+          .catch(error => {
+            console.error('Error sending password reset email:', error.message);
+            let message;
+            switch (error.code) {
+              case 'auth/user-not-found':
+                message = 'Invalid email. Please check your email address.';
+                break;
+              case 'auth/invalid-email':
+                message = 'Invalid email format. Please check your email address.';
+                break;
+              default:
+                message = 'Error sending password reset email: ' + error.message;
+            }
+            alert(message);
+          });
+      } else {
+        alert('Email is required to reset password.');
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="login-form">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" required>
+        </div>
+        <input type="hidden" name="recaptcha_response" id="recaptchaResponse">
+        <button type="submit">Login</button>
+      </form>
+      <p>Don't have an account? <a href="signup.html">Signup here</a>.</p>
+      <p>If you don't remember your password, <a href="#" id="resetPasswordLink">Click Me!</a>.</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Profile</title>
+    <link rel="shortcut icon" href="images/teacher.png" type="image/x-icon">
+    <link rel="stylesheet" href="teachersprofile.css">
+</head>
+<body>
+    <div class="profile-container">
+        <h2>Teacher Profile</h2>
+        <form id="teacherProfileForm">
+            <div class="form-group">
+                <label for="fullName">Full Name:</label>
+                <input type="text" id="fullName" name="fullName" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number:</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+            <div class="form-group">
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob" name="dob" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <textarea id="address" name="address" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="department">Department:</label>
+                <input type="text" id="department" name="department" required>
+            </div>
+            <div class="form-group">
+                <label for="qualification">Qualification:</label>
+                <input type="text" id="qualification" name="qualification" required>
+            </div>
+            <div class="form-group">
+                <label for="designation">Designation:</label>
+                <input type="text" id="designation" name="designation" required>
+            </div>
+            <div class="form-group">
+                <label for="experience">Experience (Years):</label>
+                <input type="number" id="experience" name="experience" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="employeeId">Employee ID:</label>
+                <input type="text" id="employeeId" name="employeeId" required>
+            </div>
+            <div class="form-group">
+                <label for="subjects">Subjects Taught:</label>
+                <textarea id="subjects" name="subjects" rows="2" required></textarea>
+            </div>
+            <button type="button" id="addBtn">Add Profile</button><br>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+        import { getDatabase, ref, set, get, update, remove, child } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1hnJlT9nixcWFTfNSRZVNe-hov1laRS8",
+            authDomain: "student-record-system-92.firebaseapp.com",
+            databaseURL: "https://student-record-system-92-default-rtdb.firebaseio.com",
+            projectId: "student-record-system-92",
+            storageBucket: "student-record-system-92.appspot.com",
+            messagingSenderId: "595631053147",
+            appId: "1:595631053147:web:2a50a7483e983f5c91e27e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Get all input elements
+        const fullName = document.getElementById('fullName');
+        const email = document.getElementById('email');
+        const phone = document.getElementById('phone');
+        const dob = document.getElementById('dob');
+        const address = document.getElementById('address');
+        const department = document.getElementById('department');
+        const qualification = document.getElementById('qualification');
+        const designation = document.getElementById('designation');
+        const experience = document.getElementById('experience');
+        const employeeId = document.getElementById('employeeId');
+        const subjects = document.getElementById('subjects');
+
+        // Get all buttons
+        const addBtn = document.getElementById('addBtn');
+        const updateBtn = document.getElementById('updateBtn');
+        const removeBtn = document.getElementById('removeBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+
+        // Function to validate form
+        function validateForm() {
+            if (!fullName.value || !email.value || !phone.value || !employeeId.value) {
+                alert("Please fill in all required fields");
+                return false;
+            }
+            return true;
+        }
+
+        // Function to add teacher data
+        function addData() {
+            if (!validateForm()) return;
+
+            set(ref(db, 'teacherSet/' + employeeId.value), {
+                fullName: fullName.value,
+                email: email.value,
+                phone: phone.value,
+                dob: dob.value,
+                address: address.value,
+                department: department.value,
+                qualification: qualification.value,
+                designation: designation.value,
+                experience: experience.value,
+                subjects: subjects.value
+            }).then(() => {
+                alert("Teacher Profile Added Successfully...");
+                clearForm();
+            }).catch((error) => {
+                alert("Unsuccessful: " + error);
+                console.log(error);
+            });
+        }
+
+        // Function to retrieve teacher data
+        function retData() {
+            const dbRef = ref(db);
+            get(child(dbRef, 'teacherSet/' + employeeId.value)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    fullName.value = snapshot.val().fullName;
+                    email.value = snapshot.val().email;
+                    phone.value = snapshot.val().phone;
+                    dob.value = snapshot.val().dob;
+                    address.value = snapshot.val().address;
+                    department.value = snapshot.val().department;
+                    qualification.value = snapshot.val().qualification;
+                    designation.value = snapshot.val().designation;
+                    experience.value = snapshot.val().experience;
+                    subjects.value = snapshot.val().subjects;
+                } else {
+                    alert("Teacher profile not found");
+                    clearForm();
+                }
+            }).catch((error) => {
+                alert("Error retrieving data: " + error);
+                console.log(error);
+            });
+        }
+
+        // Function to update teacher data
+        function updateData() {
+            if (!validateForm()) return;
+
+            update(ref(db, 'teacherSet/' + employeeId.value), {
+                fullName: fullName.value,
+                email: email.value,
+                phone: phone.value,
+                dob: dob.value,
+                address: address.value,
+                department: department.value,
+                qualification: qualification.value,
+                designation: designation.value,
+                experience: experience.value,
+                subjects: subjects.value
+            }).then(() => {
+                alert("Teacher Profile Updated Successfully...");
+            }).catch((error) => {
+                alert("Update Failed: " + error);
+                console.log(error);
+            });
+        }
+
+        // Function to delete teacher data
+        function deleteData() {
+            if (!employeeId.value) {
+                alert("Please enter Employee ID");
+                return;
+            }
+
+            if (confirm("Are you sure you want to delete this profile?")) {
+                remove(ref(db, 'teacherSet/' + employeeId.value)).then(() => {
+                    alert("Teacher Profile Deleted Successfully...");
+                    clearForm();
+                }).catch((error) => {
+                    alert("Delete Failed: " + error);
+                    console.log(error);
+                });
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('teacherProfileForm').reset();
+        }
+
+        addBtn.addEventListener('click', addData);
+        updateBtn.addEventListener('click', updateData);
+        removeBtn.addEventListener('click', retData);
+        deleteBtn.addEventListener('click', deleteData);
+    </script>
+</body>
+</html>

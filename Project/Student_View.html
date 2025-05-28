@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Details Viewer</title>
+    <style>
+                * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .search-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .search-box input {
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .search-box button {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .teacher-details {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            background: #667eea;
+            border-radius: 60px;
+            margin-right: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3em;
+        }
+
+        .profile-basic-info h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .profile-basic-info p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .detail-group {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .detail-group:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .detail-group h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .detail-group p {
+            color: #444;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .subjects-taught {
+            grid-column: 1 / -1;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Student Details Viewer</h1>
+            <p>Student Portal</p>
+        </div>
+
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="regNo" placeholder="Enter Registration Number">
+                <button onclick="searchStudent()">Search</button>
+            </div>
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <div class="student-details" id="studentDetails">
+            <div class="profile-header">
+                <div class="profile-image" id="profileInitial"></div>
+                <div class="profile-basic-info">
+                    <h2 id="studentName">Loading...</h2>
+                    <p id="course">Loading...</p>
+                    <p id="department">Loading...</p>
+                </div>
+            </div>
+
+            <div class="details-grid">
+                <div class="detail-group">
+                    <h3>Contact Information</h3>
+                    <p>Email: <span id="email">Loading...</span></p>
+                    <p>Phone: <span id="phone">Loading...</span></p>
+                </div>
+
+                <div class="detail-group">
+                    <h3>Personal Details</h3>
+                    <p>Date of Birth: <span id="dob">Loading...</span></p>
+                    <p>Address: <span id="address">Loading...</span></p>
+                </div>
+
+                <div class="detail-group">
+                    <h3>Academic Information</h3>
+                    <p>Current Semester: <span id="semester">Loading...</span></p>
+                    <p>CGPA: <span id="cgpa">Loading...</span></p>
+                </div>
+
+                <div class="detail-group">
+                    <h3>Student Details</h3>
+                    <p>Registration Number: <span id="regNumber">Loading...</span></p>
+                    <p>Enrollment Date: <span id="enrollmentDate">Loading...</span></p>
+                </div>
+
+                <div class="detail-group subjects-enrolled">
+                    <h3>Subjects Enrolled</h3>
+                    <p id="subjects">Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1hnJlT9nixcWFTfNSRZVNe-hov1laRS8",
+            authDomain: "student-record-system-92.firebaseapp.com",
+            databaseURL: "https://student-record-system-92-default-rtdb.firebaseio.com",
+            projectId: "student-record-system-92",
+            storageBucket: "student-record-system-92.appspot.com",
+            messagingSenderId: "595631053147",
+            appId: "1:595631053147:web:2a50a7483e983f5c91e27e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.searchStudent = async function() {
+            const regNo = document.getElementById('regNo').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const studentDetails = document.getElementById('studentDetails');
+
+            if (!regNo) {
+                showError("Please enter a Registration Number");
+                return;
+            }
+
+            try {
+                const snapshot = await get(child(ref(db), 'studentSet/' + regNo));
+                
+                if (snapshot.exists()) {
+                    const studentData = snapshot.val();
+                    updateStudentDetails(studentData, regNo);
+                    studentDetails.style.display = 'block';
+                    errorMessage.style.display = 'none';
+                } else {
+                    showError("No student found with this Registration Number");
+                    studentDetails.style.display = 'none';
+                }
+            } catch (error) {
+                showError("Error fetching student details: " + error.message);
+                studentDetails.style.display = 'none';
+            }
+        };
+
+        function updateStudentDetails(data, regNo) {
+            const initials = data.fullName.split(' ')
+                .map(name => name[0])
+                .join('')
+                .toUpperCase();
+            document.getElementById('profileInitial').textContent = initials;
+
+            document.getElementById('studentName').textContent = data.fullName;
+            document.getElementById('course').textContent = data.course;
+            document.getElementById('department').textContent = data.department;
+            document.getElementById('email').textContent = data.email;
+            document.getElementById('phone').textContent = data.phone;
+            document.getElementById('dob').textContent = new Date(data.dob).toLocaleDateString();
+            document.getElementById('address').textContent = data.address;
+            document.getElementById('semester').textContent = data.semester;
+            document.getElementById('cgpa').textContent = data.cgpa;
+            document.getElementById('regNumber').textContent = regNo;
+            document.getElementById('subjects').textContent = data.subjects;
+            
+            document.getElementById('enrollmentDate').textContent = data.enrollmentDate || 'N/A';
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

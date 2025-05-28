@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student - Course Registration System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Student - Course Registration System</h1>
+  
+  <div class="course-selection">
+    <h2>Select Courses</h2>
+    <div id="courseList"></div>
+    
+    <!-- Table to display selected courses -->
+    <h3>Selected Courses</h3>
+    <table id="selectedCoursesTable">
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Course Code</th>
+          <th>Course Name</th>
+          <th>Faculty</th>
+          <th>Slot</th>
+        </tr>
+      </thead>
+      <tbody id="selectedCoursesList"></tbody>
+    </table>
+    
+    <button id="generateTimetableBtn">Generate Timetable</button>
+  </div>
+  
+  <h2>Your Timetable</h2>
+  <table id="timetable">
+    <thead>
+      <tr>
+        <th>S.No</th>
+        <th>Course Code</th>
+        <th>Course Name</th>
+        <th>Faculty</th>
+        <th>Slot</th>
+      </tr>
+    </thead>
+    <tbody id="timetableList"></tbody>
+  </table>
+
+  <script type="module" src="student.js"></script>
+</body>
+</html>

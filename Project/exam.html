@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="images/exam.png" type="image/x-icon">
+    <title>Online Exam</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color: #f0f0f5;
+            padding: 20px;
+        }
+        .exam-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        .exam-container h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .question {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        .timer {
+            font-size: 18px;
+            color: red;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .modal-content h2 {
+            font-size: 22px;
+            color: red;
+            margin-bottom: 10px;
+        }
+        .modal-content p {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .modal-content button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .modal-content button:hover {
+            background-color: #ff1a1a;
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div class="exam-container">
+        <h1>Online Exam</h1>
+        <p class="timer" id="timer">Time Remaining: 10:00</p>
+        <p class="question" id="question">What is the capital of France?</p>
+        <input type="text" id="answer" placeholder="Your answer">
+        <br><br>
+        <button id="submitButton" onclick="submitExam()">Submit Exam</button>
+        <p id="status"></p>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <h2>Exam Ended!</h2>
+            <p id="modalMessage">You violated exam rules.</p>
+            <button onclick="closeExam()">Close Exam</button>
+        </div>
+    </div>
+
+    <script>
+        let isExamOver = false;
+        let timeLeft = 600; // 10 minutes
+        let timerInterval;
+
+        function submitExam() {
+            if (!isExamOver) {
+                document.getElementById('status').innerHTML = "Exam submitted!";
+                document.getElementById('submitButton').disabled = true; 
+                endExam("Exam submitted successfully!");
+            }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(function () {
+                if (timeLeft <= 0 || isExamOver) {
+                    clearInterval(timerInterval);
+                    if (!isExamOver) {
+                        endExam("Time is up!");
+                    }
+                } else {
+                    let minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+                    let seconds = String(timeLeft % 60).padStart(2, '0');
+                    document.getElementById('timer').innerHTML = `Time Remaining: ${minutes}:${seconds}`;
+                    timeLeft--;
+                }
+            }, 1000);
+        }
+
+        function endExam(message) {
+            if (!isExamOver) {
+                isExamOver = true;
+                clearInterval(timerInterval);
+                document.getElementById('modalMessage').innerText = message;
+                document.getElementById('modalOverlay').style.display = 'flex';
+                document.getElementById('answer').disabled = true;
+                document.getElementById('submitButton').disabled = true;
+            }
+        }
+
+        function closeExam() {
+            window.removeEventListener('beforeunload', beforeUnloadHandler);
+            document.body.innerHTML = '<h1 style="color:red; font-size: 24px;">Exam Closed</h1><p style="font-size: 18px;">You may now close this window.</p>';
+        }
+
+        function beforeUnloadHandler(event) {
+            if (!isExamOver) {
+                event.preventDefault();
+                event.returnValue = "Are you sure you want to leave? The exam will be ended.";
+                endExam("Exam ended! You tried to leave the page.");
+                return event.returnValue;
+            }
+        }
+
+        window.onload = function() {
+            startTimer();
+            window.addEventListener('beforeunload', beforeUnloadHandler);
+            document.getElementById('answer').focus(); 
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden && !isExamOver) {
+                    endExam("Exam ended! You switched tabs.");
+                }
+            });
+            document.getElementById('question').addEventListener('copy', function(e) {
+                e.preventDefault();
+                if (!isExamOver) {
+                    endExam("Exam ended! You tried to copy the question.");
+                }
+            });
+        };
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="images/download.png" type="image/x-icon">
+    <title>Firebase Storage File Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .folder {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .folder-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .file-list {
+            list-style: none;
+            padding: 0;
+        }
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin: 5px 0;
+            background-color: #f5f5f5;
+            border-radius: 3px;
+        }
+        .download-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            background-color: #007bff;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            box-shadow: 0px 4px 6px rgba(0, 123, 255, 0.2);
+        }
+        .download-link:hover {
+            background-color: #0056b3;
+            box-shadow: 0px 4px 6px rgba(0, 86, 179, 0.3);
+        }
+        .error {
+            color: #ff0000;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 3px;
+            margin: 10px 0;
+        }
+
+        /* Loader Styles */
+        .spinnerContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: #333;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loader {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .loader p {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .words {
+            display: flex;
+            gap: 10px;
+            animation: change 5s infinite;
+        }
+        .word {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        @keyframes change {
+            0%, 20% { opacity: 1; }
+            25%, 100% { opacity: 0; }
+        }
+        .words .word:nth-child(1) { animation-delay: 0s; }
+        .words .word:nth-child(2) { animation-delay: 1s; }
+        .words .word:nth-child(3) { animation-delay: 2s; }
+        .words .word:nth-child(4) { animation-delay: 3s; }
+        .words .word:nth-child(5) { animation-delay: 4s; }
+    </style>
+</head>
+<body>
+    <h1>Firebase Storage Files</h1>
+    <div id="filesList"></div>
+
+    <!-- Import Firebase SDKs -->
+    <script type="module">
+        // Import the necessary Firebase functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import { getStorage, ref, listAll, getDownloadURL, getMetadata } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1hnJlT9nixcWFTfNSRZVNe-hov1laRS8",
+            authDomain: "student-record-system-92.firebaseapp.com",
+            databaseURL: "https://student-record-system-92-default-rtdb.firebaseio.com",
+            projectId: "student-record-system-92",
+            storageBucket: "student-record-system-92.appspot.com",
+            messagingSenderId: "595631053147",
+            appId: "1:595631053147:web:2a50a7483e983f5c91e27e"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+        const storageRef = ref(storage);
+
+        // Helper function to format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Function to list all files in storage
+        async function listFiles() {
+            const filesListDiv = document.getElementById('filesList');
+            filesListDiv.innerHTML = `
+                <div id="customLoader" class="spinnerContainer">
+                    <div class="spinner"></div>
+                    <div class="loader">
+                        <p>Loading</p>
+                        <div class="words">
+                            <span class="word">posts</span>
+                            <span class="word">images</span>
+                            <span class="word">followers</span>
+                            <span class="word">hashtags</span>
+                            <span class="word">posts</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            try {
+                // List all items
+                const result = await listAll(storageRef);
+                
+                // Group files by folder
+                const filesByFolder = {};
+                
+                // Process all items
+                for (const folder of result.prefixes) {
+                    const folderName = folder.name;
+                    filesByFolder[folderName] = [];
+                    
+                    try {
+                        // Get files in this folder
+                        const folderContents = await listAll(folder);
+                        
+                        // Process each file in the folder
+                        for (const file of folderContents.items) {
+                            try {
+                                const url = await getDownloadURL(file);
+                                const metadata = await getMetadata(file);
+                                
+                                filesByFolder[folderName].push({
+                                    name: file.name,
+                                    url: url,
+                                    size: formatFileSize(metadata.size)
+                                });
+                            } catch (fileError) {
+                                console.error(`Error processing file ${file.name}:`, fileError);
+                            }
+                        }
+                    } catch (folderError) {
+                        console.error(`Error processing folder ${folderName}:`, folderError);
+                    }
+                }
+
+                // Clear loading message
+                filesListDiv.innerHTML = '';
+
+                // Display files grouped by folder
+                for (const [folderName, files] of Object.entries(filesByFolder)) {
+                    const folderDiv = document.createElement('div');
+                    folderDiv.className = 'folder';
+                    
+                    folderDiv.innerHTML = `
+                        <div class="folder-name">${folderName}</div>
+                        <ul class="file-list">
+                            ${files.map(file => `
+                                <li class="file-item">
+                                    <span>${file.name} (${file.size})</span>
+                                    <a href="${file.url}" class="download-link" target="_blank">Download</a>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    `;
+                    
+                    filesListDiv.appendChild(folderDiv);
+                }
+
+                if (Object.keys(filesByFolder).length === 0) {
+                    filesListDiv.innerHTML = '<div class="error">No files found in storage.</div>';
+                }
+
+            } catch (error) {
+                console.error('Error listing files:', error);
+                filesListDiv.innerHTML = `
+                    <div class="error">
+                        Error loading files: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Load files when page loads
+        document.addEventListener('DOMContentLoaded', listFiles);
+    </script>
+</body>
+</html>

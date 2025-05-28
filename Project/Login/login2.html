@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color:rgb(52, 149, 219);
+            line-height: 1.6;
+        }
+
+   
+        .navbar {
+            background-color: rgb(52, 149, 219);
+            padding: 15px 20px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .logo {
+            color: #ecf0f1;
+            text-decoration: none;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+
+        .logo:hover {
+            color: #000000;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links li {
+            position: relative;
+        }
+
+        .nav-links a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .nav-links a i {
+            margin-right: 8px;
+        }
+
+        .nav-links a:hover {
+            background-color: #6080a0;
+            color: #3498db;
+        }
+
+        .menu-icon {
+            display: none;
+            font-size: 24px;
+            color: #8cafb863;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .menu-icon:hover {
+            color: #3498db;
+        }
+
+        @media screen and (max-width: 768px) {
+            .menu-icon {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                background-color: #2c3e50;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                padding: 20px 0;
+                border-radius: 0 0 8px 8px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            }
+
+            .nav-links li {
+                width: 100%;
+            }
+
+            .nav-links a {
+                padding: 15px 20px;
+                justify-content: center;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+        }
+
+        .navbar.scrolled {
+            background-color: #6785a3;
+            padding: 10px 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background-color: #0052cc;
+            color: #fff;
+            height: 70vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            margin-top: 60px; 
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+        }
+
+        .login-options {
+            background-color: #f4f4f4;
+            padding: 50px 20px;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            max-width: 1200px;
+            margin: auto;
+            flex-wrap: wrap;
+        }
+
+        .login-card {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            flex: 1;
+            min-width: 250px;
+            max-width: 30%;
+            margin: 10px 0;
+        }
+
+        .login-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .login-card p {
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            text-decoration: none;
+            background-color: #0052cc;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #003d99;
+        }
+
+        
+        @media screen and (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .login-card {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="#" class="logo">Student Record Management</a>
+            <div class="menu-icon" id="menu-icon">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#"><i class="fas fa-info-circle"></i> About</a></li>
+                <li><a href="#"><i class="fas fa-cogs"></i> Services</a></li>
+                <li><a href="#"><i class="fas fa-envelope"></i> Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome to Student Record Management System</h1>
+            <p>Manage records efficiently and securely.</p>
+        </div>
+    </section>
+
+    <!-- Login Options -->
+    <section class="login-options">
+        <div class="login-container">
+            <div class="login-card">
+                <h2>Student Login</h2>
+                <p>Access your academic records and attendance.</p>
+                <a href="#" class="btn">Login as Student</a>
+            </div>
+            <div class="login-card">
+                <h2>Teacher Login</h2>
+                <p>Manage student records and track attendance.</p>
+                <a href="#" class="btn">Login as Teacher</a>
+            </div>
+            <div class="login-card">
+                <h2>Admin Login</h2>
+                <p>Administer the entire system with full control.</p>
+                <a href="#" class="btn">Login as Admin</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.getElementById('menu-icon').addEventListener('click', function() {
+            const navLinks = document.getElementById('nav-links');
+            navLinks.classList.toggle('active');
+        });
+
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        document.addEventListener('click', function(event) {
+            const navLinks = document.getElementById('nav-links');
+            const menuIcon = document.getElementById('menu-icon');
+
+            if (!navLinks.contains(event.target) && !menuIcon.contains(event.target)) {
+                navLinks.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

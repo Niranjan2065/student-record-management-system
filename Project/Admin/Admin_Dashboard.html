@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link rel="shortcut icon" href="/images/personnel.png" type="image/x-icon">
+    <link rel="stylesheet" href="Admin_Dashboard.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="profile-section">
+                <div class="profile-image">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h3>Admin Panel</h3>
+                <p>System Administrator</p>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>View Student Profiles</span>
+                </div>
+                <div class="menu-item">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>View Teacher Profiles</span>
+                </div>
+                <div class="menu-item">
+                    <i class="fas fa-book-open"></i>
+                    <span>Offer Courses</span>
+                </div>
+                <div class="menu-item">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Add Fees</span>
+                </div>
+                <div class="menu-item">
+                    <i class="fas fa-cogs"></i>
+                    <span>Settings</span>
+                </div>
+                <div class="menu-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>Messages</span>
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="header">
+                <div class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <h2>Welcome to Admin Dashboard</h2>
+                <div class="user-profile">
+                    <img src="https://via.placeholder.com/40" alt="Profile Image">
+                    <span>Admin</span>
+                </div>
+            </div>
+            <div class="dashboard-grid">
+                
+                <div class="dashboard-card" onclick="window.location.href='/Teacher/Student_View.html'">
+                    <div class="card-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="card-title">Manage Students</div>
+                    <div class="card-description">View and manage student profiles</div>
+                </div>
+
+                <div class="dashboard-card" onclick="window.location.href='/Admin/Teacher_View.html'">
+                    <div class="card-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="card-title">Manage Teachers</div>
+                    <div class="card-description">View and manage teacher profiles</div>
+                </div>
+
+                <div class="dashboard-card" onclick="window.location.href='/Course-Reg/admin.html'">
+                    <div class="card-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="card-title">Courses</div>
+                    <div class="card-description">Offer new courses to students</div>
+                </div>
+
+                <div class="dashboard-card" onclick="window.location.href='/Admin/admin-fees-structure.html'">
+                    <div class="card-icon">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <div class="card-title">Manage Fees</div>
+                    <div class="card-description">Manage student fee details</div>
+                </div>
+
+                <div class="dashboard-card" onclick="window.location.href='/Admin/Announcements.html'">
+                    <div class="card-icon">
+                        <i class="fas fa-bullhorn"></i>
+                    </div>
+                    <div class="card-title">Announcements</div>
+                    <div class="card-description">Post important announcements for all users</div>
+                </div>
+
+                <div class="dashboard-card" onclick="window.location.href='/Admin/admin-fees-structure.html'">
+                    <div class="card-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="card-title">Manage Staff</div>
+                    <div class="card-description">Add or remove staff and assign roles</div>
+                </div>
+
+                <div class="dashboard-card" onclick="window.location.href='/Admin/admin-fees-structure.html'">
+                    <div class="card-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="card-title">Reports</div>
+                    <div class="card-description">Generate and view administrative reports</div>
+                </div>
+
+                <div class="dashboard-card" onclick="window.location.href='/Admin/admin-fees-structure.html'">
+                    <div class="card-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="card-title">Schedule Management</div>
+                    <div class="card-description">Organize and manage events and schedules</div>
+                </div>
+                
+                <div class="dashboard-card" onclick="window.location.href=''">
+                    <div class="card-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="card-title">Feedback</div>
+                    <div class="card-description">Review feedback from students and staff</div>
+                </div>
+
+                <div class="dashboard-card" onclick="window.location.href=''">
+                    <div class="card-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <div class="card-title">Certificates</div>
+                    <div class="card-description">Issue certificates for completed courses</div>
+                </div>
+            
+                <div class="dashboard-card" onclick="window.location.href=''">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="card-title">Analytics</div>
+                    <div class="card-description">View analytics on performance and activities</div>
+                </div>
+
+                <div class="dashboard-card"  onclick="window.location.href=''">
+                    <div class="card-icon">
+                        <i class="fas fa-user-lock"></i>
+                    </div>
+                    <div class="card-title">User Access Control</div>
+                    <div class="card-description">Manage permissions and access levels</div>
+                </div>
+
+                <div class="dashboard-card" onclick="window.location.href=''">
+                    <div class="card-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="card-title">Data Backup</div>
+                    <div class="card-description">Backup and restore important data</div>
+                </div>
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>About</h4>
+                <ul>
+                    <li>Our Mission</li>
+                    <li>Privacy Policy</li>
+                    <li>Terms of Service</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <ul>
+                    <li>Email: admin@example.com</li>
+                    <li>Phone: 123-456-7890</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <ul>
+                    <li><i class="fab fa-facebook"></i> Facebook</li>
+                    <li><i class="fab fa-twitter"></i> Twitter</li>
+                    <li><i class="fab fa-linkedin"></i> LinkedIn</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Admin Panel. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('.sidebar-toggle').addEventListener('click', function () {
+            document.querySelector('.sidebar').classList.toggle('visible');
+            document.querySelector('.main-content').classList.toggle('shifted');
+        });
+    </script>
+</body>
+
+</html>

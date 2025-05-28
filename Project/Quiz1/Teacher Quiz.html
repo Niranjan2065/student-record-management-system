@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="Teacher Quiz.css">
+    <link rel="shortcut icon" href="quiz1.png" type="image/x-icon">
+    <title>Add Quiz Questions</title>
+</head>
+<body>
+    <form id="quizForm">
+        <h2><center>Add Quiz Questions</center></h2>
+        <label for="question">Question:</label>
+        <input type="text" id="question" required><br><br>
+
+        <label for="option1">Option 1:</label>
+        <input type="text" id="option1" required><br><br>
+
+        <label for="option2">Option 2:</label>
+        <input type="text" id="option2" required><br><br>
+
+        <label for="option3">Option 3:</label>
+        <input type="text" id="option3" required><br><br>
+
+        <label for="option4">Option 4:</label>
+        <input type="text" id="option4" required><br><br>
+
+        <label for="answer">Correct Answer (Option 1, 2, 3, or 4):</label>
+        <input type="number" id="answer" min="1" max="4" required><br><br>
+
+       <button class="btn">Sumbit</button>
+      
+
+    </form>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1hnJlT9nixcWFTfNSRZVNe-hov1laRS8",
+            authDomain: "student-record-system-92.firebaseapp.com",
+            databaseURL: "https://student-record-system-92-default-rtdb.firebaseio.com",
+            projectId: "student-record-system-92",
+            storageBucket: "student-record-system-92.appspot.com",
+            messagingSenderId: "595631053147",
+            appId: "1:595631053147:web:2a50a7483e983f5c91e27e"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Handle form submission
+        document.getElementById('quizForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const question = document.getElementById('question').value;
+            const options = [
+                document.getElementById('option1').value,
+                document.getElementById('option2').value,
+                document.getElementById('option3').value,
+                document.getElementById('option4').value
+            ];
+            const correctAnswer = document.getElementById('answer').value;
+
+            // Save quiz question to Firebase
+            const newQuizKey = push(ref(database, 'quizzes')).key;
+            set(ref(database, 'quizzes/' + newQuizKey), {
+                question: question,
+                options: options,
+                correctAnswer: correctAnswer
+            });
+
+            alert('Quiz question added successfully!');
+            document.getElementById('quizForm').reset();
+        });
+    </script>
+</body>
+</html>

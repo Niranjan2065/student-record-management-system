@@ -1,0 +1,228 @@
+:root {
+    --primary-color: #3f51b5;
+    --secondary-color: #ff4081;
+    --background-color: #f0f2f5;
+    --text-color: #333;
+    --present-color: #4CAF50;
+    --absent-color: #f44336;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 0;
+    color: var(--text-color);
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header h1 {
+    margin: 0;
+    color: white;
+    font-size: 2.5em;
+    font-weight: 600;
+}
+
+#studentList {
+    list-style-type: none;
+    padding: 0;
+}
+
+.student-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.student-item:last-child {
+    border-bottom: none;
+}
+
+.student-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.student-name {
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    padding: 8px 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.btn-present {
+    background-color: var(--present-color);
+    color: white;
+}
+
+.btn-absent {
+    background-color: var(--absent-color);
+    color: white;
+}
+
+.btn-present:hover, .btn-absent:hover {
+    filter: brightness(110%);
+    transform: translateY(-2px);
+}
+
+.btn-present:active, .btn-absent:active {
+    transform: translateY(1px);
+}
+
+.btn-present.selected, .btn-absent.selected {
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.2);
+}
+
+#submitBtn {
+  position: relative;
+  display: block;
+  width: 200px;
+  margin: 30px auto 0;
+  padding: 10px 20px;
+  border-radius: 7px;
+  border: 1px solid rgb(61, 106, 255);
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 2px;
+  background: transparent;
+  color: var(--primary-color);
+  overflow: hidden;
+  box-shadow: 0 0 0 0 transparent;
+  -webkit-transition: all 0.2s ease-in;
+  -moz-transition: all 0.2s ease-in;
+  transition: all 0.2s ease-in;
+}
+
+#submitBtn:hover {
+  background: rgb(61, 106, 255);
+  color: #fff;
+  box-shadow: 0 0 30px 5px rgba(0, 142, 236, 0.815);
+  -webkit-transition: all 0.2s ease-out;
+  -moz-transition: all 0.2s ease-out;
+  transition: all 0.2s ease-out;
+}
+
+#submitBtn:hover::before {
+  -webkit-animation: sh02 0.5s 0s linear;
+  -moz-animation: sh02 0.5s 0s linear;
+  animation: sh02 0.5s 0s linear;
+}
+
+#submitBtn::before {
+  content: '';
+  display: block;
+  width: 0px;
+  height: 86%;
+  position: absolute;
+  top: 7%;
+  left: 0%;
+  opacity: 0;
+  background: #fff;
+  box-shadow: 0 0 50px 30px #fff;
+  -webkit-transform: skewX(-20deg);
+  -moz-transform: skewX(-20deg);
+  -ms-transform: skewX(-20deg);
+  -o-transform: skewX(-20deg);
+  transform: skewX(-20deg);
+}
+
+@keyframes sh02 {
+  from {
+    opacity: 0;
+    left: 0%;
+  }
+  50% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    left: 100%;
+  }
+}
+
+#submitBtn:active {
+  box-shadow: 0 0 0 0 transparent;
+  -webkit-transition: box-shadow 0.2s ease-in;
+  -moz-transition: box-shadow 0.2s ease-in;
+  transition: box-shadow 0.2s ease-in;
+}
+
+#attendanceSummary {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-evenly;
+    
+
+}
+
+@media (max-width: 600px) {
+    .container {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        padding: 15px;
+    }
+
+    .student-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn-group {
+        margin-top: 10px;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.student-item {
+    animation: fadeIn 0.5s ease-out forwards;
+    opacity: 0;
+}
+
+.student-item:nth-child(1) { animation-delay: 0.1s; }
+.student-item:nth-child(2) { animation-delay: 0.2s; }
+.student-item:nth-child(3) { animation-delay: 0.3s; }
+
+

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/images/announcement.png" type="image/x-icon">
+    <title>Announcements</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .login-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .announcements-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .announcement {
+            border-left: 4px solid #2196F3;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .announcement-content {
+            color: #333;
+            flex: 1;
+        }
+
+        .delete-btn {
+            background: #f44336;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #d32f2f;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            background: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #1976D2;
+        }
+
+        .error {
+            color: #f44336;
+            margin-bottom: 10px;
+        }
+
+        .success {
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .delete-btn {
+            background: #f44336;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 0.9em;
+        }
+
+        .delete-btn:hover {
+            background: #d32f2f;
+        }
+
+        .announcement {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-left: 4px solid #2196F3;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .announcement-content {
+            flex: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📢 Announcements</h1>
+        </div>
+
+        <div class="login-section" id="loginSection">
+            <h2>Admin Login</h2>
+            <input type="text" id="adminUsername" placeholder="Username">
+            <input type="password" id="adminPassword" placeholder="Password">
+            <button onclick="login()">Login</button>
+            <p id="loginError" class="error"></p>
+        </div>
+
+        <div class="admin-section" id="adminSection">
+            <h2>Post Announcement</h2>
+            <textarea id="announcementContent" placeholder="Type your announcement here..."></textarea>
+            <button onclick="postAnnouncement()">Post Announcement</button>
+            <p id="postSuccess" class="success"></p>
+            <button onclick="logout()" style="background: #f44336;">Logout</button>
+        </div>
+
+        <div class="announcements-section">
+            <h2>Latest Announcements</h2>
+            <div id="announcementsList"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import the required Firebase functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, serverTimestamp, query, orderByChild, remove }
+            from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1hnJlT9nixcWFTfNSRZVNe-hov1laRS8",
+            authDomain: "student-record-system-92.firebaseapp.com",
+            databaseURL: "https://student-record-system-92-default-rtdb.firebaseio.com",
+            projectId: "student-record-system-92",
+            storageBucket: "student-record-system-92.appspot.com",
+            messagingSenderId: "595631053147",
+            appId: "1:595631053147:web:2a50a7483e983f5c91e27e"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const announcementsRef = ref(database, 'announcements');
+
+        // Admin credentials (in a real application, this should be handled securely)
+        const ADMIN_USERNAME = "admin";
+        const ADMIN_PASSWORD = "admin123";
+
+        // Global variable to track login state
+        let isLoggedIn = false;
+
+        // Login function
+        window.login = function () {
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            const loginError = document.getElementById('loginError');
+
+            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+                isLoggedIn = true;
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('adminSection').style.display = 'block';
+                loginError.textContent = '';
+            } else {
+                loginError.textContent = 'Invalid username or password';
+            }
+        };
+
+        // Logout function
+        window.logout = function () {
+            isLoggedIn = false;
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('adminSection').style.display = 'none';
+            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminPassword').value = '';
+        };
+
+        // Post announcement function
+        window.postAnnouncement = function () {
+            if (!isLoggedIn) {
+                alert('You must be logged in as admin to post announcements');
+                return;
+            }
+
+            const content = document.getElementById('announcementContent').value.trim();
+            if (!content) {
+                alert('Please enter announcement content');
+                return;
+            }
+
+            // Create new announcement
+            push(announcementsRef, {
+                content: content,
+                timestamp: serverTimestamp(),
+                author: 'Admin'
+            }).then(() => {
+                document.getElementById('announcementContent').value = '';
+                document.getElementById('postSuccess').textContent = 'Announcement posted successfully!';
+                setTimeout(() => {
+                    document.getElementById('postSuccess').textContent = '';
+                }, 3000);
+            }).catch((error) => {
+                alert('Error posting announcement: ' + error.message);
+            });
+        };
+        // Delete announcement function
+        window.deleteAnnouncement = function (announcementId) {
+            if (!isLoggedIn) {
+                alert('You must be logged in as admin to delete announcements');
+                return;
+            }
+
+            if (confirm('Are you sure you want to delete this announcement?')) {
+                const announcementRef = ref(database, `announcements/${announcementId}`);
+                remove(announcementRef)
+                    .then(() => {
+                        console.log('Announcement deleted successfully');
+                    })
+                    .catch((error) => {
+                        alert('Error deleting announcement: ' + error.message);
+                    });
+            }
+        };
+
+
+        // Listen for announcements
+        function loadAnnouncements() {
+            const announcementsQuery = query(announcementsRef, orderByChild('timestamp'));
+
+            onValue(announcementsQuery, (snapshot) => {
+                const announcementsList = document.getElementById('announcementsList');
+                announcementsList.innerHTML = '';
+
+                const announcements = [];
+                snapshot.forEach((child) => {
+                    announcements.push({
+                        id: child.key,
+                        ...child.val()
+                    });
+                });
+
+                announcements.reverse().forEach((announcement) => {
+                    const date = announcement.timestamp ?
+                        new Date(announcement.timestamp).toLocaleString() :
+                        'Just now';
+
+                    const announcementElement = document.createElement('div');
+                    announcementElement.className = 'announcement';
+                    announcementElement.innerHTML = `
+                        <div class="announcement-header">
+                            <span>${announcement.author}</span>
+                            <span>${date}</span>
+                        </div>
+                        <div class="announcement-content">
+                            ${announcement.content}
+                        </div>
+                        <button class="delete-btn" onclick="deleteAnnouncement('${announcement.id}')">Delete</button>
+                    `;
+                    announcementsList.appendChild(announcementElement);
+                });
+            });
+        }
+
+
+        // Start loading announcements when the page loads
+        loadAnnouncements();
+    </script>
+</body>
+
+</html>

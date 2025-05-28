@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        /* Navigation Bar */
+        nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: #34495e;
+            padding: 15px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        nav a:hover {
+            background-color: #2ecc71;
+        }
+        .logout-btn {
+            background-color: #e74c3c;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        /* Main Container */
+        .container {
+            padding: 30px;
+        }
+        h2 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .content {
+            display: flex;
+            justify-content: space-evenly;
+            flex-wrap: wrap;
+        }
+
+        /* Cards Styling */
+        .card {
+            background-color: white;
+            padding: 20px;
+            margin: 15px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+        }
+        .card h3 {
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .card p {
+            color: #777;
+            font-size: 14px;
+        }
+
+        /* Button */
+        .button {
+            background-color: #2ecc71;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #27ae60;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            width: 100%;
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>Student Dashboard</h1>
+    </header>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <a href="#"><img src="Images/home.png" alt="Home Icon" style="vertical-align: middle;"> Home</a>
+        <a href="#"><img src="Images/course.png" alt="Courses Icon" style="vertical-align: middle;"> Courses</a>
+        <a href="#"><img src="Images/Assignments.png" alt="Assignments Icon" style="vertical-align: middle;"> Assignments</a>
+        <a href="#"><img src="Images/grade.png" alt="Grades Icon" style="vertical-align: middle;"> Grades</a>
+        <a href="#" class="logout-btn"><img src="Images/logout.png" alt="Logout Icon" style="vertical-align: middle;"> Logout</a>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2>Student Information</h2>
+        <div class="content">
+            <!-- Personal Details -->
+            <div class="card">
+                <h3>Personal Details</h3>
+                <p>View and edit your personal information such as name, age, and contact information.</p>
+                <button class="button">View Details</button>
+            </div>
+
+            <!-- Courses -->
+            <div class="card">
+                <h3>Courses</h3>
+                <p>Enroll and view the list of your courses along with the course schedule.</p>
+                <button class="button">View Courses</button>
+            </div>
+
+            <!-- Assignments -->
+            <div class="card">
+                <h3>Assignments</h3>
+                <p>Track your assignments, view deadlines, and submit completed work.</p>
+                <button class="button">View Assignments</button>
+            </div>
+
+            <!-- Grades -->
+            <div class="card">
+                <h3>Grades</h3>
+                <p>View your academic performance and track your grades across subjects.</p>
+                <button class="button">View Grades</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Student Management System | All Rights Reserved</p>
+    </footer>
+
+</body>
+</html>

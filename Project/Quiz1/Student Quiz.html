@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="Student Quiz.css">
+    <link rel="shortcut icon" href="quiz.png" type="image/x-icon">
+    <title>Student Quiz</title>
+</head>
+<body>
+    
+    <div id="quizContainer">
+        <h2>Quiz</h2>
+        <p id="timer">Time Left: 15</p>
+        <p id="questionText"></p>
+        <div id="optionsContainer"></div>
+        <button id="submitAnswer">Submit Answer</button>
+    </div>
+    <p id="scoreDisplay"></p>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1hnJlT9nixcWFTfNSRZVNe-hov1laRS8",
+            authDomain: "student-record-system-92.firebaseapp.com",
+            databaseURL: "https://student-record-system-92-default-rtdb.firebaseio.com",
+            projectId: "student-record-system-92",
+            storageBucket: "student-record-system-92.appspot.com",
+            messagingSenderId: "595631053147",
+            appId: "1:595631053147:web:2a50a7483e983f5c91e27e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        let quizQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        let timeLeft = 15;
+
+        onValue(ref(database, 'quizzes'), (snapshot) => {
+            quizQuestions = [];
+            snapshot.forEach((childSnapshot) => {
+                quizQuestions.push(childSnapshot.val());
+            });
+
+            if (quizQuestions.length > 0) {
+                startQuiz();
+            } else {
+                alert('No quiz questions available.');
+            }
+        });
+
+        function shuffleQuestions(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            timeLeft = 15;
+            shuffleQuestions(quizQuestions); // Shuffle questions
+            displayQuestion();
+            startTimer();
+        }
+
+        function displayQuestion() {
+            if (currentQuestionIndex < quizQuestions.length) {
+                const question = quizQuestions[currentQuestionIndex];
+                document.getElementById('questionText').innerText = question.question;
+
+                const optionsContainer = document.getElementById('optionsContainer');
+                optionsContainer.innerHTML = '';
+                question.options.forEach((option, index) => {
+                    const optionElement = document.createElement('div');
+                    optionElement.innerHTML = `<input type="radio" name="option" value="${index + 1}"> ${option}`;
+                    optionsContainer.appendChild(optionElement);
+                });
+            } else {
+                endQuiz();
+            }
+        }
+
+        function startTimer() {
+            document.getElementById('timer').innerText = `Time Left: ${timeLeft}`;
+            timer = setInterval(function() {
+                timeLeft--;
+                document.getElementById('timer').innerText = `Time Left: ${timeLeft}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    checkAnswer();
+                }
+            }, 1000);
+        }
+
+        function checkAnswer() {
+            clearInterval(timer);
+            const selectedOption = document.querySelector('input[name="option"]:checked');
+            if (selectedOption && selectedOption.value == quizQuestions[currentQuestionIndex].correctAnswer) {
+                score++;
+            }
+
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizQuestions.length) {
+                timeLeft = 15;
+                displayQuestion();
+                startTimer();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function endQuiz() {
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('scoreDisplay').innerText = `Your score: ${score}`;
+            setTimeout(startQuiz, 5000); // Restart the quiz after 5 seconds
+        }
+
+        document.getElementById('submitAnswer').addEventListener('click', checkAnswer);
+    </script>
+</body>
+</html>

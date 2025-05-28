@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/images/delete-account.png" type="image/x-icon">
+    <title>Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e8ebf3 0%, #d1d9e6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.3rem;
+            color: #2c3e50;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: #2980b9;
+            margin-bottom: 1.2rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #7f8c8d;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #3498db;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .status {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 5px;
+            display: none;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Admin Dashboard</h1>
+            <p>Manage Students and Teachers</p>
+        </div>
+        
+        <div class="dashboard">
+            <div class="card">
+                <h2>Remove Student</h2>
+                <div class="input-group">
+                    <label for="studentRegNo">Student Registration Number</label>
+                    <input type="text" id="studentRegNo" placeholder="Enter registration number">
+                </div>
+                <button onclick="removeStudent()">Remove Student</button>
+                <div id="studentStatus" class="status"></div>
+            </div>
+
+            <div class="card">
+                <h2>Remove Teacher</h2>
+                <div class="input-group">
+                    <label for="teacherId">Teacher ID</label>
+                    <input type="text" id="teacherId" placeholder="Enter teacher ID">
+                </div>
+                <button onclick="removeTeacher()">Remove Teacher</button>
+                <div id="teacherStatus" class="status"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getDatabase, ref, get, remove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1hnJlT9nixcWFTfNSRZVNe-hov1laRS8",
+            authDomain: "student-record-system-92.firebaseapp.com",
+            databaseURL: "https://student-record-system-92-default-rtdb.firebaseio.com",
+            projectId: "student-record-system-92",
+            storageBucket: "student-record-system-92.appspot.com",
+            messagingSenderId: "595631053147",
+            appId: "1:595631053147:web:2a50a7483e983f5c91e27e"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        window.removeStudent = async function() {
+            const regNo = document.getElementById('studentRegNo').value;
+            const statusElement = document.getElementById('studentStatus');
+            
+            if (!regNo) {
+                showStatus(statusElement, 'Please enter a registration number', false);
+                return;
+            }
+
+            try {
+                const studentRef = ref(database, 'studentSet/' + regNo);
+                const snapshot = await get(studentRef);
+                
+                if (!snapshot.exists()) {
+                    showStatus(statusElement, 'Student not found!', false);
+                    return;
+                }
+
+                await remove(studentRef);
+                showStatus(statusElement, 'Student removed successfully!', true);
+                document.getElementById('studentRegNo').value = '';
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus(statusElement, 'Error removing student: ' + error.message, false);
+            }
+        };
+
+        window.removeTeacher = async function() {
+            const teacherId = document.getElementById('teacherId').value;
+            const statusElement = document.getElementById('teacherStatus');
+            
+            if (!teacherId) {
+                showStatus(statusElement, 'Please enter a teacher ID', false);
+                return;
+            }
+
+            try {
+                const teacherRef = ref(database, 'teacherSet/' + teacherId);
+                const snapshot = await get(teacherRef);
+                
+                if (!snapshot.exists()) {
+                    showStatus(statusElement, 'Teacher not found!', false);
+                    return;
+                }
+
+                await remove(teacherRef);
+                showStatus(statusElement, 'Teacher removed successfully!', true);
+                document.getElementById('teacherId').value = '';
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus(statusElement, 'Error removing teacher: ' + error.message, false);
+            }
+        };
+
+        function showStatus(element, message, isSuccess) {
+            element.textContent = message;
+            element.className = 'status ' + (isSuccess ? 'success' : 'error');
+            setTimeout(() => {
+                element.className = 'status';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

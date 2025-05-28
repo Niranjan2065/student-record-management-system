@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile</title>
+    <link rel="shortcut icon" href="images/book.png" type="image/x-icon">
+    <link rel="stylesheet" href="studentform.css"> 
+</head>
+<body>
+    <div class="profile-container">
+        <h2>Student Profile</h2>
+        <form id="studentProfileForm">
+            <div class="form-group">
+                <label for="fullName">Full Name:</label>
+                <input type="text" id="fullName" name="fullName" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number:</label>
+                <input type="tel" id="phone" name="phone">
+            </div>
+            <div class="form-group">
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob" name="dob" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <textarea id="address" name="address" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="course">Course:</label>
+                <input type="text" id="course" name="course" required>
+            </div>
+            <div class="form-group">
+                <label for="year">Year:</label>
+                <input type="number" id="year" name="year" min="1" max="5" required>
+                <label for="regInp">REG NO:</label>
+                <input type="number" id="regInp">
+            </div>
+            <button type="button" id="addBtn">Add Profile</button><br>
+        </form>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+        import { getDatabase, ref, set, get, update, remove, child } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+
+        const firebaseConfig = {
+  apiKey: "AIzaSyC1hnJlT9nixcWFTfNSRZVNe-hov1laRS8",
+  authDomain: "student-record-system-92.firebaseapp.com",
+  databaseURL: "https://student-record-system-92-default-rtdb.firebaseio.com",
+  projectId: "student-record-system-92",
+  storageBucket: "student-record-system-92.appspot.com",
+  messagingSenderId: "595631053147",
+  appId: "1:595631053147:web:2a50a7483e983f5c91e27e"
+};
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const fullName = document.getElementById('fullName');
+        const email = document.getElementById('email');
+        const phone = document.getElementById('phone');
+        const dob = document.getElementById('dob');
+        const address = document.getElementById('address');
+        const course = document.getElementById('course');
+        const year = document.getElementById('year');
+        const regInp = document.getElementById('regInp');
+
+        const addBtn = document.getElementById('addBtn');
+        const updateBtn = document.getElementById('updateBtn');
+        const removeBtn = document.getElementById('removeBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+
+        function addData() {
+            set(ref(db, 'studentSet/' + regInp.value), {
+                fullName: fullName.value,
+                email: email.value,
+                phone: phone.value,
+                dob: dob.value,
+                address: address.value,
+                course: course.value,
+                year: year.value
+            }).then(() => {
+                alert("Student Data Added Successfully...");
+            }).catch((error) => {
+                alert("Unsuccessful: " + error);
+                console.log(error);
+            });
+        }
+
+        function retData() {
+            const dbRef = ref(db);
+            get(child(dbRef, 'studentSet/' + regInp.value)).then((snapshot) => {
+                if (snapshot.exists()) {
+                   prompt= fullName.value = snapshot.val().fullName;
+                   email.value = snapshot.val().email;
+                    phone.value = snapshot.val().phone;
+                    dob.value = snapshot.val().dob;
+                    address.value = snapshot.val().address;
+                    course.value = snapshot.val().course;
+                    year.value = snapshot.val().year;
+                } else {
+                    alert("Student does not exist");
+                }
+            }).catch((error) => {
+                alert("Unsuccessful: " + error);
+                console.log(error);
+            });
+        }
+
+        function updateData() {
+            update(ref(db, 'studentSet/' + regInp.value), {
+                fullName: fullName.value,
+                email: email.value,
+                phone: phone.value,
+                dob: dob.value,
+                address: address.value,
+                course: course.value,
+                year: year.value
+            }).then(() => {
+                alert("Student Data Updated Successfully...");
+            }).catch((error) => {
+                alert("Unsuccessful: " + error);
+                console.log(error);
+            });
+        }
+
+        function deleteData() {
+            remove(ref(db, 'studentSet/' + regInp.value)).then(() => {
+                alert("Student Data Deleted Successfully...");
+            }).catch((error) => {
+                alert("Unsuccessful: " + error);
+                console.log(error);
+            });
+        }
+
+        addBtn.addEventListener('click', addData);
+        updateBtn.addEventListener('click', updateData);
+        removeBtn.addEventListener('click', retData);
+        deleteBtn.addEventListener('click', deleteData);
+    </script>
+</body>
+</html>

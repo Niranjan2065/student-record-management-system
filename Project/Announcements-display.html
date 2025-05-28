@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/images/web-promotion.png" type="image/x-icon">
+    <title>Latest Announcements</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .announcements-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .announcement {
+            border-left: 4px solid #2196F3;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .announcement-content {
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📢 Latest Announcements</h1>
+        </div>
+
+        <div class="announcements-section">
+            <div id="announcementsList"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import the required Firebase functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import { getDatabase, ref, onValue, query, orderByChild }
+            from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1hnJlT9nixcWFTfNSRZVNe-hov1laRS8",
+            authDomain: "student-record-system-92.firebaseapp.com",
+            databaseURL: "https://student-record-system-92-default-rtdb.firebaseio.com",
+            projectId: "student-record-system-92",
+            storageBucket: "student-record-system-92.appspot.com",
+            messagingSenderId: "595631053147",
+            appId: "1:595631053147:web:2a50a7483e983f5c91e27e"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const announcementsRef = ref(database, 'announcements');
+
+        // Listen for announcements
+        function loadAnnouncements() {
+            const announcementsQuery = query(announcementsRef, orderByChild('timestamp'));
+
+            onValue(announcementsQuery, (snapshot) => {
+                const announcementsList = document.getElementById('announcementsList');
+                announcementsList.innerHTML = '';
+
+                const announcements = [];
+                snapshot.forEach((child) => {
+                    announcements.push({
+                        id: child.key,
+                        ...child.val()
+                    });
+                });
+                function loadAnnouncements() {
+                    const announcementsQuery = query(announcementsRef, orderByChild('timestamp'));
+
+                    onValue(announcementsQuery, (snapshot) => {
+                        const announcementsList = document.getElementById('announcementsList');
+                        announcementsList.innerHTML = '';
+
+                        const announcements = [];
+                        snapshot.forEach((child) => {
+                            announcements.push({
+                                id: child.key,
+                                ...child.val()
+                            });
+                        });
+
+                        announcements.reverse().forEach((announcement) => {
+                            const date = announcement.timestamp ?
+                                new Date(announcement.timestamp).toLocaleString() :
+                                'Just now';
+
+                            const announcementElement = document.createElement('div');
+                            announcementElement.className = 'announcement';
+                            announcementElement.innerHTML = `
+                <div class="announcement-content">
+                    <div class="announcement-header">
+                        <span>${announcement.author}</span>
+                        <span>${date}</span>
+                    </div>
+                    <div>${announcement.content}</div>
+                </div>
+                ${isLoggedIn ?
+                                    `<button class="delete-btn" onclick="deleteAnnouncement('${announcement.id}')">Delete</button>`
+                                    : ''}
+            `;
+                            announcementsList.appendChild(announcementElement);
+                        });
+                    });
+                }
+                // Reverse the array to show newest first
+                announcements.reverse().forEach((announcement) => {
+                    const date = announcement.timestamp ?
+                        new Date(announcement.timestamp).toLocaleString() :
+                        'Just now';
+
+                    const announcementElement = document.createElement('div');
+                    announcementElement.className = 'announcement';
+                    announcementElement.innerHTML = `
+                        <div class="announcement-header">
+                            <span>${announcement.author}</span>
+                            <span>${date}</span>
+                        </div>
+                        <div class="announcement-content">
+                            ${announcement.content}
+                        </div>
+                    `;
+                    announcementsList.appendChild(announcementElement);
+                });
+            });
+        }
+
+        // Start loading announcements when the page loads
+        loadAnnouncements();
+    </script>
+</body>
+
+</html>
